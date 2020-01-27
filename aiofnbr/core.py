@@ -143,6 +143,9 @@ class Item():
         self.rarity = json.get('rarity',None)
         self.type = json.get('type',None)
         self.readableType = json.get('readableType',None)
+        history= json.get('history',None)
+        if history != None:
+            self.occurrences = history.get('occurrences', None)
         images = json.get('images',None)
         if images != None:
             self.icon = images.get('icon',None)

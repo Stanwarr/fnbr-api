@@ -1,4 +1,5 @@
-import requests
+import aiohttp
+import asyncio
 from . import constants, utils
 
 # requests
@@ -8,9 +9,12 @@ class APIRequest():
         self.key = key
         self.endpoint = endpoint
         self.arguments = arguments
+    @asyncio.coroutine
     def url(self):
-        url = constants.BASEURL + self.endpoint + self.parseArguments()
+        args = yield from self.parseArguments()
+        url = constants.BASEURL + self.endpoint + args
         return url
+    @asyncio.coroutine
     def parseArguments(self):
         args = ""
         for a in self.arguments:
@@ -18,9 +22,15 @@ class APIRequest():
         if len(args) > 0:
             args = "?" + args
         return args
+    @asyncio.coroutine
     def send(self):
         headers = {'x-api-key':self.key}
-        self.response = APIResponse(requests.get(url=self.url(),headers=headers))
+        session = aiohttp.ClientSession(headers=headers)
+        url = yield from self.url()
+        response = yield from session.get(url)
+        json = yield from response.json()
+        yield from session.close()
+        self.response = APIResponse(response,json)
         return self.response
 
 class Images(APIRequest):
@@ -69,16 +79,13 @@ class Stat(APIRequest):
 # responses
 class APIResponse():
     """API Response (formated requests.response)"""
-    def __init__(self,response):
+    def __init__(self,response,json):
         self.headers = response.headers
-        try:
-            self.json = response.json()
-        except ValueError:
-            self.json = {}
+        self.json = json
         try:
             self.status = self.json['status']
         except KeyError:
-            self.status = response.status_code
+            self.status = response.status
         if self.status != 200:
             self.type = constants.ERROR_TYPE
             try:
@@ -124,35 +131,35 @@ class ImageResponse():
         for i in range(0,len(json['data'])):
             self.results.append(Item(json['data'][i]))
 
+
 class Item():
     """A fortnite shop item"""
     def __init__(self,json={}):
-        self.id = self.load('id',json)
-        self.name = self.load('name',json)
-        self.price = self.load('price',json)
-        self.priceIcon = self.load('priceIcon',json)
-        self.priceIconLink = self.load('priceIconLink',json)
-        self.rarity = self.load('rarity',json)
-        self.type = self.load('type',json)
-        self.readableType = self.load('readableType',json)
-        if 'images' in json:
-            self.icon = self.load('icon',json['images'])
-            self.png = self.load('png',json['images'])
-            self.gallery = self.load('gallery',json['images'])
-            self.featured = self.load('featured',json['images'],False)
-    def load(self,name,json,default=""):
-        if name in json:
-            value =  json[name]
-        else:
-            value = default
-        return value
+        self.id = json.get('id',None)
+        self.name = json.get('name',None)
+        self.price = json.get('price',None)
+        self.priceIcon = json.get('priceIcon',None)
+        self.priceIconLink = json.get('priceIconLink',None)
+        self.rarity = json.get('rarity',None)
+        self.type = json.get('type',None)
+        self.readableType = json.get('readableType',None)
+        history= json.get('history',None)
+        if history != None:
+            self.occurrences = history.get('occurrences', None)
+        images = json.get('images',None)
+        if images != None:
+            self.icon = images.get('icon',None)
+            self.png = images.get('png',None)
+            self.gallery = images.get('gallery',None)
+            self.featured = images.get('featured',None)
 
 class StatItem():
     """A fnbr category stat item"""
     def __init__(self,json={}):
-        self.type = self.load('type',json)
+        self.type = json.get('type',None)
         self.rarity = []
-        if 'rarity' in json:
+        rarity = json.get('rarity',None)
+        if rarity != None:
             for i in range(0,len(json['rarity'])):
                 self.rarity.append(StatRarity(json['rarity'][i]))
     def load(self,name,json,default=""):
