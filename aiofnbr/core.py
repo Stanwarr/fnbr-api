@@ -156,9 +156,6 @@ class Item():
         self.price = json.get('finalPrice',None)
         
         
-        history= json.get('history',None)
-        if history != None:
-            self.occurrences = history.get('occurrences', None)
 
 
 
