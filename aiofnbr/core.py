@@ -116,7 +116,7 @@ class ShopResponse():
         for i in range(0,len(json['data']['daily'])):
             self.daily.append(Item(json['data']['daily'][i]))
         self.date = json.get('data',None).get('date',None)
-        print(self.date)
+
 
 class StatResponse():
     def __init__(self,json={}):
