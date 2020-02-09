@@ -68,7 +68,7 @@ class Images(APIRequest):
 class Shop(APIRequest):
     """"Shop API Request"""
     def __init__(self,key):
-        super().__init__(key,"/shop",{})
+        super().__init__(key,"/shop/br",{})
 
 class Stat(APIRequest):
     """Stat API Request"""
@@ -135,23 +135,32 @@ class ImageResponse():
 class Item():
     """A fortnite shop item"""
     def __init__(self,json={}):
-        self.id = json.get('id',None)
-        self.name = json.get('name',None)
-        self.price = json.get('price',None)
-        self.priceIcon = json.get('priceIcon',None)
-        self.priceIconLink = json.get('priceIconLink',None)
-        self.rarity = json.get('rarity',None)
-        self.type = json.get('type',None)
-        self.readableType = json.get('readableType',None)
+        items = json.get('items', None)[0]
+        if items != None:
+            self.id = items.get('id',None)
+            self.name = items.get('name',None)
+            self.rarity = items.get('rarity',None)
+            self.type = items.get('type',None)
+        images = items.get('images',None)
+        if images != None:
+            icon_ = images.get('icon',None)
+            if icon_ != None:
+                self.icon = icon_.get('url',None)
+            smallicon_ = images.get('smallIcon',None)
+            if smallicon_ != None:
+                self.smallicon = smallicon_.get('url',None)
+            featured_ = images.get('featured',None)
+            if featured_ != None:
+                self.featured = featured_.get('url',None)
+
+        self.price = json.get('finalPrice',None)
+        
+        
         history= json.get('history',None)
         if history != None:
             self.occurrences = history.get('occurrences', None)
-        images = json.get('images',None)
-        if images != None:
-            self.icon = images.get('icon',None)
-            self.png = images.get('png',None)
-            self.gallery = images.get('gallery',None)
-            self.featured = images.get('featured',None)
+
+
 
 class StatItem():
     """A fnbr category stat item"""
