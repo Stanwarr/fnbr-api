@@ -1,4 +1,4 @@
-BASEURL = "https://fnbr.co/api"
+BASEURL = "https://fortnite-api.com"
 VALID_IMAGE_TYPES = ['emote','glider','emoji','loading','outfit','pickaxe','skydive','umbrella','misc']
 VALID_IMAGE_LIMIT_MIN = 1
 VALID_IMAGE_LIMIT_MAX = 15
