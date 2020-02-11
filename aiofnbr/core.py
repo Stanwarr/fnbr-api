@@ -137,9 +137,13 @@ class Item():
     """A fortnite shop item"""
     def __init__(self,json={}):
         items = json.get('items', None)[0]
+        self.isBundle = json.get('isBundle', None)
         if items != None:
             self.id = items.get('id',None)
-            self.name = items.get('name',None)
+            if self.isBundle == True:
+                self.name = items.get('name',None) + ' (Bundle)'
+            else:
+                self.name = items.get('name',None)
             self.rarity = items.get('rarity',None)
             self.type = items.get('type',None)
         images = items.get('images',None)
