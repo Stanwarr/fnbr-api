@@ -2,6 +2,7 @@ import aiohttp
 import asyncio
 from . import constants, utils
 
+
 # requests
 class APIRequest():
     """Parent class of all API Requests"""
@@ -110,11 +111,13 @@ class APIResponse():
 class ShopResponse():
     def __init__(self,json={}):
         self.featured = []
-        for i in range(0,len(json['data']['featured'])):
-            self.featured.append(Item(json['data']['featured'][i]))
+        if json['data']['featured']:
+            for i in range(0,len(json['data']['featured'])):
+                self.featured.append(Item(json['data']['featured'][i]))
         self.daily = []
-        for i in range(0,len(json['data']['daily'])):
-            self.daily.append(Item(json['data']['daily'][i]))
+        if json['data']['daily']:
+            for i in range(0,len(json['data']['daily'])):
+                self.daily.append(Item(json['data']['daily'][i]))
         self.date = json.get('data',None).get('date',None)
 
 
