@@ -13,7 +13,7 @@ setup(
     long_description_content_type='text/x-rst',
     license="MIT",
     keywords="API fortnite fnbr",
-    packages=["fnbr","aiofnbr"],
+    packages=["aiofnbr"],
     install_requires=["requests","aiohttp"],
     classifiers = [
         "Development Status :: 4 - Beta",
