@@ -86,10 +86,10 @@ class Item():
 	def __init__(self,json={}):
 		items = json.get('items', None)[0]
 		if items != None:
-			self.isBundle = json.get('isBundle', None)
+			isBundle = json.get('bundle', None)
 			self.id = items.get('id',None)
-			if self.isBundle == True:
-				self.name = items.get('name',None) + ' (Bundle)'
+			if isBundle != None:
+				self.name = isBundle.get('name',None)
 			else:
 				self.name = items.get('name',None)
 			rarity_ = items.get('rarity',None)
@@ -102,7 +102,10 @@ class Item():
 			if images != None:
 				self.icon = images.get('icon',None)
 				self.smallicon = images.get('smallIcon',None)
-				self.featured = images.get('featured',None)
+				if isBundle != None:
+					self.featured = isBundle.get('image',None)
+				else:
+					self.featured = images.get('featured',None)
 			self.price = json.get('finalPrice',None)
 		
 		
